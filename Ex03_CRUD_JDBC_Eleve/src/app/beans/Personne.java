@@ -45,6 +45,7 @@ public class Personne {
 
   public Personne () {
   }
+  
   public Personne (boolean federer) {
        this("Federer", "Roger", DateTimeLib.createDate(8, 8, 1981), 
                17, "Rue du Nord", 4001, "Bâle", true, 1000000d,DateTimeLib.createDate(8, 8, 1981));
@@ -143,6 +144,5 @@ public class Personne {
   public String toString() {
     return "Personne: " + pkPers + ", nom=" + nom + ", prenom=" + prenom;
   }
-  
   
 }

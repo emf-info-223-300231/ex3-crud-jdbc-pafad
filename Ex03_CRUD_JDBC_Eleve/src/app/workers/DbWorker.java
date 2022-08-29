@@ -12,7 +12,6 @@ public class DbWorker implements DbWorkerItf {
 
     private Connection dbConnexion;
     private List<Personne> listePersonnes;
-    private int index = 0;
 
     /**
      * Constructeur du worker
@@ -75,19 +74,26 @@ public class DbWorker implements DbWorkerItf {
         
         return listePersonnes;
     }
-
+    
     @Override
-    public Personne precedentPersonne() throws MyDBException {
-
-        return null;
-
+    public Personne lire(int index){
+        //Lire la personne à l'index actuelle
+        return listePersonnes.get(index);
     }
-
+    
     @Override
-    public Personne suivantPersonne() throws MyDBException {
-
-        return null;
-
+    public void modifier(){
+        
+    }
+    
+    @Override
+    public void effacer(){
+        
+    }
+    
+    @Override
+    public void creer(Personne){
+        
     }
 
 }
