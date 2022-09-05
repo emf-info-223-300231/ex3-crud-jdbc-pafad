@@ -9,10 +9,11 @@ public interface DbWorkerItf {
   void connecterBdMySQL( String nomDB ) throws MyDBException;
   void connecterBdHSQLDB( String nomDB ) throws MyDBException;
   void connecterBdAccess( String nomDB ) throws MyDBException;
+  List<Personne> lirePersonnes() throws MyDBException;
   void deconnecter() throws MyDBException; 
-  void effacer();
-  void creer();
-  void modifier();
-  Personne lire(int index);
+  void effacer(Personne personne) throws MyDBException;
+  void creer(Personne personne) throws MyDBException;
+  void modifier(Personne personne) throws MyDBException;
+  Personne lire(int index) throws MyDBException;
 
 }
