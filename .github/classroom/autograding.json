@@ -1,0 +1,14 @@
+{
+  "tests": [
+    {
+      "name": "Test DbWorker",
+      "setup": "",
+      "run": "ant -Dnb.internal.action.name=test -Dignore.failing.tests=true test",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 10,
+      "points": 100
+    }
+  ]
+}
