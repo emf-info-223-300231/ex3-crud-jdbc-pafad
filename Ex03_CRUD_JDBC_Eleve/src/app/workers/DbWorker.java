@@ -121,7 +121,7 @@ public class DbWorker implements DbWorkerItf {
         PreparedStatement requete;
         
         //Construction de la requête finale en fonction de ce qu'il y a comme modification, cette requête peut économiser des perfomances en comparant les données
-        String requeteFinale = "";
+        String requeteFinale = "UPDATE t_personne SET ";
         try{
             
             //Préparation de la requête pour éviter les injections
@@ -140,7 +140,7 @@ public class DbWorker implements DbWorkerItf {
                 if(!personne.getNom().equals(rs.getString("Nom"))){
                     
                     //Ajout de la requête modifiant le nom
-                    requeteFinale += "UPDATE t_personne SET Nom = " + personne.getNom() + " WHERE PK_PERS = " + personne.getPkPers() + ";\n";
+                    requeteFinale += "Nom = '" + personne.getNom() + "',\n";
                     
                     //Il y a une modification
                     modif = true;
@@ -150,7 +150,7 @@ public class DbWorker implements DbWorkerItf {
                 if(!personne.getPrenom().equals(rs.getString("Prenom"))){
                     
                     //Ajout de la requête modifiant le prénom
-                    requeteFinale += "UPDATE t_personne SET Prenom = " + personne.getPrenom() + " WHERE PK_PERS = " + personne.getPkPers() + ";\n";
+                    requeteFinale += "Prenom = '" + personne.getPrenom() + "',\n";
                     
                     //Il y a une modification
                     modif = true;
@@ -160,7 +160,7 @@ public class DbWorker implements DbWorkerItf {
                 if(!personne.getDateNaissance().equals(rs.getDate("Date_naissance"))){
                     
                     //Ajout de la requête modifiant la date de naissance
-                    requeteFinale += "UPDATE t_personne SET Date_naissance = " + personne.getDateNaissance() + " WHERE PK_PERS = " + personne.getPkPers() + ";\n";
+                    requeteFinale += "Date_naissance = '" + personne.getDateNaissance() + "',\n";
                 
                     //Il y a une modification
                     modif = true;
@@ -170,7 +170,7 @@ public class DbWorker implements DbWorkerItf {
                 if(personne.getNoRue() != rs.getInt("No_rue")){
                     
                     //Ajout de la requête modifiant le numéro de rue
-                    requeteFinale += "UPDATE t_personne SET No_rue = " + personne.getNoRue() + " WHERE PK_PERS = " + personne.getPkPers() + ";\n";
+                    requeteFinale += "No_rue = " + personne.getNoRue() + ",\n";
                 
                     //Il y a une modification
                     modif = true;
@@ -180,7 +180,7 @@ public class DbWorker implements DbWorkerItf {
                 if(!personne.getRue().equals(rs.getString("Rue"))){
                     
                     //Ajout de la requête modifiant la rue
-                    requeteFinale += "UPDATE t_personne SET Rue = " + personne.getRue() + " WHERE PK_PERS = " + personne.getPkPers() + ";\n";
+                    requeteFinale += "Rue = '" + personne.getRue() + "',\n";
                     
                     //Il y a une modification
                     modif = true;
@@ -190,7 +190,7 @@ public class DbWorker implements DbWorkerItf {
                 if(personne.getNpa() != rs.getInt("NPA")){
                     
                     //Ajout de la requête modifiant le code postal
-                    requeteFinale += "UPDATE t_personne SET NPA = " + personne.getNpa() + " WHERE PK_PERS = " + personne.getPkPers() + ";\n";
+                    requeteFinale += "NPA = " + personne.getNpa() + ",\n";
                     
                     //Il y a une modification
                     modif = true;
@@ -200,7 +200,7 @@ public class DbWorker implements DbWorkerItf {
                 if(!personne.getLocalite().equals(rs.getString("Ville"))){
                     
                     //Ajout de la requête modifiant la ville
-                    requeteFinale += "UPDATE t_personne SET Ville = " + personne.getLocalite() + " WHERE PK_PERS = " + personne.getPkPers() + ";\n";
+                    requeteFinale += "Ville = '" + personne.getLocalite() + "',\n";
                     
                     //Il y a une modification
                     modif = true;
@@ -210,7 +210,7 @@ public class DbWorker implements DbWorkerItf {
                 if(personne.isActif() != rs.getBoolean("Actif")){
                     
                     //Ajout de la requête modifiant l'activité
-                    requeteFinale += "UPDATE t_personne SET Actif = " + personne.isActif() + " WHERE PK_PERS = " + personne.getPkPers() + ";\n";
+                    requeteFinale += "Actif = " + personne.isActif() + ",\n";
                     
                     //Il y a une modification
                     modif = true;
@@ -220,7 +220,7 @@ public class DbWorker implements DbWorkerItf {
                 if(personne.getSalaire() != rs.getDouble("Salaire")){
                     
                     //Ajout de la requête modifiant le salaire
-                    requeteFinale += "UPDATE t_personne SET Salaire = " + personne.getSalaire() + " WHERE PK_PERS = " + personne.getPkPers() + ";\n";
+                    requeteFinale += "Salaire = " + personne.getSalaire() + ",\n";
                     
                     //Il y a une modification
                     modif = true;
@@ -230,24 +230,32 @@ public class DbWorker implements DbWorkerItf {
                 if(modif){
                     
                     //Mise à jour de la date de modification
-                    requeteFinale += "UPDATE t_personne SET date_modif = " + Date.valueOf(LocalDate.now()) + " WHERE PK_PERS = " + personne.getPkPers() + ";\n";
+                    requeteFinale += "date_modif = '" + Date.valueOf(LocalDate.now()) + "',\n";
                     
                     //Mise à jour du numéro de la modification
-                    requeteFinale += "UPDATE t_personne SET no_modif = " + (rs.getInt("no_modif") + 1) + " WHERE PK_PERS = " + personne.getPkPers() + ";\n";
+                    requeteFinale += "no_modif = " + (rs.getInt("no_modif") + 1) + "\n";
+                    
+                    //Condition de la requête
+                    requeteFinale += " WHERE PK_PERS = " + personne.getPkPers() + ";";
+                
+                    //Pour tester elle affiche la requête finale construite
+                    System.out.println(requeteFinale);
+                
+                    //Preparation de la requête pour éviter les injections comme toujours
+                    requete = dbConnexion.prepareStatement(requeteFinale);
+                
+                    //On met tout à jour avec cette méthode
+                    requete.executeUpdate();
+                
+                } else { //S'il n'y a pas de modification
+                    
+                    //On vire la requête
+                    requeteFinale = "";
                 }
-                
-                //Pour tester elle affiche la requête finale construite
-                System.out.println(requeteFinale);
-                
-                //Preparation de la requête pour éviter les injections comme toujours
-                requete = dbConnexion.prepareStatement(requeteFinale);
-                
-                //On met tout à jour avec cette méthode
-                requete.executeUpdate();
+                         
             }
             
         } catch(SQLException ex){
-            ex.printStackTrace();
             throw new MyDBException(SystemLib.getFullMethodName(), ex.getMessage());
         }
     }
