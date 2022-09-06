@@ -12,14 +12,12 @@ public class DbWorker implements DbWorkerItf {
 
     private Connection dbConnexion;
     private List<Personne> listePersonnes;
-    private ArrayList<String> listeChamps;
     
     /**
      * Constructeur du worker
      */
     public DbWorker() {
         listePersonnes = new ArrayList<>();
-        listeChamps = new ArrayList<>();
     }
 
     @Override
@@ -74,10 +72,14 @@ public class DbWorker implements DbWorkerItf {
 
     @Override
     public List<Personne> lirePersonnes() throws MyDBException { 
-        //Récupération des personnes
+        //Requête vide
+        PreparedStatement requete;
+        
         try{
             //Pour éviter des injections SQL
-            PreparedStatement requete = dbConnexion.prepareStatement("select PK_PERS, Nom, Prenom, Date_Naissance, No_rue, Rue, NPA, Ville, Actif, Salaire, date_modif from t_personne");
+            requete = dbConnexion.prepareStatement(
+                    "select PK_PERS, Nom, Prenom, Date_Naissance, No_rue, Rue, NPA, Ville, Actif, Salaire, date_modif from t_personne"
+            );
         
             //Execution de la requête
             ResultSet rs = requete.executeQuery();
@@ -98,16 +100,83 @@ public class DbWorker implements DbWorkerItf {
                         rs.getDate("date_modif") //Date dateModif
                 )); //Ajout de la personne
             }
+            
         } catch (SQLException ex){
             throw new MyDBException(SystemLib.getFullMethodName(), ex.getMessage());
         }
+        
+        //Retour de la liste de personnes
         return listePersonnes;
     }
     
     @Override
     public Personne lire(int index) throws MyDBException {
         //Lire la personne à l'index actuelle
-        return listePersonnes.get(index);
+        try{
+            //Pour éviter des injections SQL
+            PreparedStatement requete = dbConnexion.prepareStatement(
+                    "select PK_PERS, Nom, Prenom, Date_Naissance, No_rue, Rue, NPA, Ville, Actif, Salaire, date_modif from t_personne WHERE PK_PERS = ?"
+            );
+            
+            //On place la pk que l'on va rechercher
+            requete.setInt(1, index);
+            
+            //Execution de la requête
+            ResultSet resultat = requete.executeQuery();
+            
+            //S'il y a des résultats
+            if(resultat.next()){
+                
+                //Je crée un boolean pour savoir si j'ai une correspondence
+                boolean match = false;
+                
+                //On garde au chaud le résultat de cette méthode
+                Personne resultatPersonne = null;
+                
+                //Récupération des info de la personne dans la base de données
+                int pk = resultat.getInt("PK_PERS");
+                
+                //Recherche dans la liste de personne
+                for(Personne personne : listePersonnes){
+                    
+                    //Je compare les pk
+                    if(personne.getPkPers() == pk){
+                        
+                        //Je mets mon résultat ici, c'est à dire dans la déclaration faite plus haute
+                        resultatPersonne = personne;
+                        
+                        //Je passe mon match à true
+                        match = true;
+                        
+                        //Je casse la boucle une fois trouvé
+                        break;
+                    } 
+                       
+                }
+                
+                //Si j'ai une correspondance
+                if(match){
+                    
+                    //Je retourne la personne ayant cette pk
+                    return resultatPersonne;
+                    
+                } else {
+                    
+                    //Si j'ai vraiment aucun match je retourne null
+                    return null;
+                    
+                }
+                
+            } else {
+                
+                //Si aucun résultat
+                return null;
+                
+            }
+            
+        } catch (SQLException ex){
+            throw new MyDBException(SystemLib.getFullMethodName(), ex.getMessage());
+        } 
     }
     
     @Override
@@ -259,7 +328,10 @@ public class DbWorker implements DbWorkerItf {
     
     @Override
     public void effacer(Personne personne) throws MyDBException {
+        
+        //Une requête vide
         PreparedStatement st;
+        
         try{
             //Préparation de la requête
             st = dbConnexion.prepareStatement("delete from t_personne where PK_PERS = ?");
@@ -269,6 +341,7 @@ public class DbWorker implements DbWorkerItf {
             
             //On execute la requête
             st.executeUpdate();
+            
         }catch (SQLException ex){
             throw new MyDBException(SystemLib.getFullMethodName(), ex.getMessage());
         }
@@ -276,9 +349,13 @@ public class DbWorker implements DbWorkerItf {
     
     @Override
     public void creer(Personne personne) throws MyDBException {
-        //Pour éviter les injections SQL
+        
+        //Une requête vide
         PreparedStatement st;
+        
         try{
+            
+            //Pour éviter les injections SQL
             st = dbConnexion.prepareStatement(
                     "insert into t_personne("
                             + "nom, prenom, date_naissance, no_rue, rue, npa, ville, actif, salaire, date_modif, no_modif"
@@ -298,7 +375,9 @@ public class DbWorker implements DbWorkerItf {
             st.setDate(10, convertirDate(personne.getDateModif())); //La date de la modif
             st.setInt(11, 0); //Le numéro de la modif
         
+            //J'execute la requête avec executeUpdate, elle est pour des mise à jours dont les insertion, update et delete
             st.executeUpdate();
+            
         } catch (SQLException ex){
             throw new MyDBException(SystemLib.getFullMethodName(), ex.getMessage());
         }
@@ -310,7 +389,10 @@ public class DbWorker implements DbWorkerItf {
      * @return La date (java.sql.Date)
      */
     public java.sql.Date convertirDate(java.util.Date date){
+        
+        //Je transforme la date en long puis je la place dans une instance de java.sql.Date
         return new java.sql.Date(date.getTime());   
+        
     }
     
 }
