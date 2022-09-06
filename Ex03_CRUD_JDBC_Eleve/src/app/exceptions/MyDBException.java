@@ -1,5 +1,7 @@
 package app.exceptions;
 
+import java.sql.SQLException;
+
 /**
  *
  * @author PA
