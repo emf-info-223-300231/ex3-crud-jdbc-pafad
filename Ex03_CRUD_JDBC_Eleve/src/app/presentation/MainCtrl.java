@@ -160,7 +160,7 @@ public class MainCtrl implements Initializable {
                 manPers.setPersonnes(dbWrk.lirePersonnes());
                 
                 //Afficher un message si tout se passe bien
-                JfxPopup.displayInformation("succès", "Suppression de personne", "Suppression de la personne effectué avec succès");
+                JfxPopup.displayInformation("Succès", "Suppression de personne", "Suppression de la personne effectué avec succès");
                 
                 //On affiche la dernière personne
                 afficherPersonne(manPers.finPersonne());
@@ -221,7 +221,7 @@ public class MainCtrl implements Initializable {
                 ));
 
                 //Afficher un message si tout se passe bien
-                JfxPopup.displayInformation("succès", "Ajout de personne", "Ajout de la personne effectué avec succès");
+                JfxPopup.displayInformation("Succès", "Ajout de personne", "Ajout de la personne effectué avec succès");
 
                 //Mise à jour de la liste
                 manPers.setPersonnes(dbWrk.lirePersonnes());
@@ -267,6 +267,9 @@ public class MainCtrl implements Initializable {
                 
                 //Message si succès
                 JfxPopup.displayInformation("Succès", "Modification de personne", "La personne a été modifié avec succès");
+                
+                //Retour au menu principal
+                rendreVisibleBoutonsDepl(true);
                 
                 //Afficher la personne courante
                 afficherPersonne(manPers.courantPersonne());
