@@ -6,11 +6,7 @@ import app.helpers.SystemLib;
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
-import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class DbWorker implements DbWorkerItf {
 
@@ -122,6 +118,7 @@ public class DbWorker implements DbWorkerItf {
         
         //Construction de la requête finale en fonction de ce qu'il y a comme modification, cette requête peut économiser des perfomances en comparant les données
         String requeteFinale = "UPDATE t_personne SET ";
+        
         try{
             
             //Préparation de la requête pour éviter les injections
@@ -264,8 +261,13 @@ public class DbWorker implements DbWorkerItf {
     public void effacer(Personne personne) throws MyDBException {
         PreparedStatement st;
         try{
+            //Préparation de la requête
             st = dbConnexion.prepareStatement("delete from t_personne where PK_PERS = ?");
-            st.setInt(0, personne.getPkPers());
+            
+            //On y place la pk que l'on veut supprimer à la fin
+            st.setInt(1, personne.getPkPers());
+            
+            //On execute la requête
             st.executeUpdate();
         }catch (SQLException ex){
             throw new MyDBException(SystemLib.getFullMethodName(), ex.getMessage());

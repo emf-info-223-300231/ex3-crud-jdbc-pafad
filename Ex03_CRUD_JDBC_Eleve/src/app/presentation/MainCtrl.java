@@ -141,11 +141,39 @@ public class MainCtrl implements Initializable {
 
     @FXML
     private void menuEffacer(ActionEvent event) {
-        //On rend invisible les boutons de navigation
-        rendreVisibleBoutonsDepl(false);
         
-        //On passe en mode modification
-        modeAjout = false;
+        //Récupération de la peronne courante
+        Personne personne = manPers.courantPersonne();
+        
+        //Boolean de confirmation pour la supression
+        boolean confirm = JfxPopup.askConfirmation("Continuer", "Supression de personne", "Voulez-vous vraiment supprimer cette personne de la base de données ?");
+        
+        //S'il y a confirmation de l'utilisateur
+        if(confirm){
+            
+            try{
+                
+                //Supression de la personne
+                dbWrk.effacer(personne);
+                
+                //Mise à jour de la liste
+                manPers.setPersonnes(dbWrk.lirePersonnes());
+                
+                //Afficher un message si tout se passe bien
+                JfxPopup.displayInformation("succès", "Suppression de personne", "Suppression de la personne effectué avec succès");
+                
+                //On affiche la dernière personne
+                afficherPersonne(manPers.finPersonne());
+                
+            } catch (MyDBException ex){
+                
+                //Affichage d'un message d'erreur
+                JfxPopup.displayError("Erreur", "Suppression de personne", ex.getMessage());
+                
+            }
+            
+        }
+        
     }
 
     @FXML
@@ -205,7 +233,7 @@ public class MainCtrl implements Initializable {
                 modeAjout = false;
 
                 //Retour au menu principal
-                rendreVisibleBoutonsDepl(modeAjout);
+                rendreVisibleBoutonsDepl(true);
 
             } catch (MyDBException ex){ //S'il y a une erreur
 
@@ -233,8 +261,21 @@ public class MainCtrl implements Initializable {
                 
                 //On passe au worker pour qu'il applique les changements dans la base de données
                 dbWrk.modifier(personne);
+                
+                //Mise à jour de la liste
+                manPers.setPersonnes(dbWrk.lirePersonnes());
+                
+                //Message si succès
+                JfxPopup.displayInformation("Succès", "Modification de personne", "La personne a été modifié avec succès");
+                
+                //Afficher la personne courante
+                afficherPersonne(manPers.courantPersonne());
+                
+                //Retour au menu principal
             } catch (MyDBException ex){
 
+                //Affichage d'un message d'erreur
+                JfxPopup.displayError("Erreur", "Modification de personne", ex.getMessage());
             }
         }
     }
@@ -286,7 +327,11 @@ public class MainCtrl implements Initializable {
                     System.out.println("Base de données pas définie");
             }
             System.out.println("------- DB OK ----------");
+            
+            //Lecture des personnes et ajout dans le navigateur et la db
             manPers.setPersonnes(dbWrk.lirePersonnes());
+            
+            //Afficher une personne
             afficherPersonne(manPers.precedentPersonne());
         } catch (MyDBException ex){
             JfxPopup.displayError("ERREUR", "Une erreur s'est produite", ex.getMessage());
